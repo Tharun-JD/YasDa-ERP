@@ -432,9 +432,17 @@ body::after {
   animation: slide-in-left 500ms var(--ease-premium);
 }
 
+.sidebar-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.65rem;
+  margin-bottom: 1.4rem;
+}
+
 .brand-title {
   font-size: 1.3rem;
-  margin-bottom: 1.4rem;
+  margin-bottom: 0;
 }
 
 .side-nav {

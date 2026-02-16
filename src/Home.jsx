@@ -1442,7 +1442,20 @@ function Home({ user, onSignOut }) {
     <main className={`home-layout ${theme === 'light' ? 'theme-light' : 'theme-dark'} ${isSidebarVisible ? '' : 'sidebar-collapsed'}`}>
       {isSidebarVisible ? (
       <aside className="home-sidebar">
-        <h1 className="brand-title">Workspace</h1>
+        <div className="sidebar-head">
+          <h1 className="brand-title">Workspace</h1>
+          <button
+            type="button"
+            className="top-btn icon-btn nav-toggle-btn"
+            onClick={() => setIsSidebarVisible(false)}
+            aria-label="Hide sidebar"
+            title="Hide sidebar"
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M4 6.5h16M4 12h16M4 17.5h16" />
+            </svg>
+          </button>
+        </div>
         <nav className="side-nav" aria-label="Main navigation">
           {navItems.map((item) => {
             const hasChildren = Array.isArray(item.children)
@@ -1526,23 +1539,19 @@ function Home({ user, onSignOut }) {
       ) : null}
 
       <section className="home-content">
-        <button
-          type="button"
-          className="top-btn icon-btn nav-toggle-btn nav-toggle-corner"
-          onClick={() => setIsSidebarVisible((prev) => !prev)}
-          aria-label={isSidebarVisible ? 'Hide sidebar' : 'Show sidebar'}
-          title={isSidebarVisible ? 'Hide sidebar' : 'Show sidebar'}
-        >
-          {isSidebarVisible ? (
+        {!isSidebarVisible ? (
+          <button
+            type="button"
+            className="top-btn icon-btn nav-toggle-btn nav-toggle-corner"
+            onClick={() => setIsSidebarVisible(true)}
+            aria-label="Show sidebar"
+            title="Show sidebar"
+          >
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
               <path d="M4 6.5h16M4 12h16M4 17.5h16" />
             </svg>
-          ) : (
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M6 6l12 12M18 6 6 18" />
-            </svg>
-          )}
-        </button>
+          </button>
+        ) : null}
         {!hideTopbar ? (
         <header className="home-topbar">
           <div className="search-wrap">
