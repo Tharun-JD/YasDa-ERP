@@ -768,7 +768,7 @@ body::after {
 .nav-toggle-corner {
   position: fixed;
   top: 1rem;
-  right: 1rem;
+  left: 1rem;
   z-index: 60;
   box-shadow: 0 8px 18px rgb(0 0 0 / 0.24);
 }
@@ -1897,7 +1897,7 @@ body::after {
 
   .nav-toggle-corner {
     top: 0.8rem;
-    right: 0.8rem;
+    left: 0.8rem;
   }
 }
 
