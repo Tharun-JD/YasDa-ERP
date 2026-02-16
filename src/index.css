@@ -421,6 +421,10 @@ body::after {
   color: var(--home-text);
 }
 
+.home-layout.sidebar-collapsed {
+  grid-template-columns: 1fr;
+}
+
 .home-sidebar {
   border-right: 1px solid var(--home-border);
   background: var(--home-surface);
@@ -741,6 +745,15 @@ body::after {
 
 .icon-btn {
   min-width: 2.25rem;
+}
+
+.nav-toggle-btn {
+  padding: 0.45rem;
+}
+
+.nav-toggle-btn svg {
+  width: 1rem;
+  height: 1rem;
 }
 
 .photo-update-btn {

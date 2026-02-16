@@ -510,6 +510,7 @@ function Home({ user, onSignOut }) {
   const [topUpMessage, setTopUpMessage] = useState('')
   const [topUpFieldNonce, setTopUpFieldNonce] = useState(0)
   const [menuOpen, setMenuOpen] = useState(false)
+  const [isSidebarVisible, setIsSidebarVisible] = useState(true)
   const [isCompanyDetailOpen, setIsCompanyDetailOpen] = useState(false)
   const profileMenuRef = useRef(null)
   const initialActiveItemRef = useRef(activeItem)
@@ -1438,7 +1439,8 @@ function Home({ user, onSignOut }) {
     (activeItem === 'View Customer Company Details' && isCompanyDetailOpen)
 
   return (
-    <main className={`home-layout ${theme === 'light' ? 'theme-light' : 'theme-dark'}`}>
+    <main className={`home-layout ${theme === 'light' ? 'theme-light' : 'theme-dark'} ${isSidebarVisible ? '' : 'sidebar-collapsed'}`}>
+      {isSidebarVisible ? (
       <aside className="home-sidebar">
         <h1 className="brand-title">Workspace</h1>
         <nav className="side-nav" aria-label="Main navigation">
@@ -1521,6 +1523,7 @@ function Home({ user, onSignOut }) {
           })}
         </nav>
       </aside>
+      ) : null}
 
       <section className="home-content">
         {!hideTopbar ? (
@@ -1536,6 +1539,23 @@ function Home({ user, onSignOut }) {
           </div>
 
           <div className="top-actions">
+            <button
+              type="button"
+              className="top-btn icon-btn nav-toggle-btn"
+              onClick={() => setIsSidebarVisible((prev) => !prev)}
+              aria-label={isSidebarVisible ? 'Hide sidebar' : 'Show sidebar'}
+              title={isSidebarVisible ? 'Hide sidebar' : 'Show sidebar'}
+            >
+              {isSidebarVisible ? (
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M4 6.5h16M4 12h16M4 17.5h16" />
+                </svg>
+              ) : (
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M6 6l12 12M18 6 6 18" />
+                </svg>
+              )}
+            </button>
             <button
               type="button"
               className="top-btn theme-btn icon-btn"
