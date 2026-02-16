@@ -750,18 +750,27 @@ body::after {
 
 .nav-toggle-btn {
   padding: 0.45rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--home-text);
+  border-color: var(--home-border);
+  background: var(--home-surface-2);
 }
 
 .nav-toggle-btn svg {
-  width: 1rem;
-  height: 1rem;
+  width: 1.05rem;
+  height: 1.05rem;
+  display: block;
+  stroke: currentColor;
 }
 
 .nav-toggle-corner {
-  position: absolute;
-  top: 1.45rem;
-  right: 1.6rem;
-  z-index: 30;
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  z-index: 60;
+  box-shadow: 0 8px 18px rgb(0 0 0 / 0.24);
 }
 
 .photo-update-btn {
@@ -1887,8 +1896,8 @@ body::after {
   }
 
   .nav-toggle-corner {
-    top: 1rem;
-    right: 1.1rem;
+    top: 0.8rem;
+    right: 0.8rem;
   }
 }
 
