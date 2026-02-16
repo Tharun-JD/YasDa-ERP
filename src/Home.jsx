@@ -1526,6 +1526,23 @@ function Home({ user, onSignOut }) {
       ) : null}
 
       <section className="home-content">
+        <button
+          type="button"
+          className="top-btn icon-btn nav-toggle-btn nav-toggle-corner"
+          onClick={() => setIsSidebarVisible((prev) => !prev)}
+          aria-label={isSidebarVisible ? 'Hide sidebar' : 'Show sidebar'}
+          title={isSidebarVisible ? 'Hide sidebar' : 'Show sidebar'}
+        >
+          {isSidebarVisible ? (
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M4 6.5h16M4 12h16M4 17.5h16" />
+            </svg>
+          ) : (
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M6 6l12 12M18 6 6 18" />
+            </svg>
+          )}
+        </button>
         {!hideTopbar ? (
         <header className="home-topbar">
           <div className="search-wrap">
@@ -1539,23 +1556,6 @@ function Home({ user, onSignOut }) {
           </div>
 
           <div className="top-actions">
-            <button
-              type="button"
-              className="top-btn icon-btn nav-toggle-btn"
-              onClick={() => setIsSidebarVisible((prev) => !prev)}
-              aria-label={isSidebarVisible ? 'Hide sidebar' : 'Show sidebar'}
-              title={isSidebarVisible ? 'Hide sidebar' : 'Show sidebar'}
-            >
-              {isSidebarVisible ? (
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M4 6.5h16M4 12h16M4 17.5h16" />
-                </svg>
-              ) : (
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M6 6l12 12M18 6 6 18" />
-                </svg>
-              )}
-            </button>
             <button
               type="button"
               className="top-btn theme-btn icon-btn"

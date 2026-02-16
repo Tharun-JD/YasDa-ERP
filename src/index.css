@@ -642,6 +642,7 @@ body::after {
 }
 
 .home-content {
+  position: relative;
   padding: 1.1rem 1.25rem;
   animation: content-enter 520ms 90ms var(--ease-premium) both;
 }
@@ -754,6 +755,13 @@ body::after {
 .nav-toggle-btn svg {
   width: 1rem;
   height: 1rem;
+}
+
+.nav-toggle-corner {
+  position: absolute;
+  top: 1.45rem;
+  right: 1.6rem;
+  z-index: 30;
 }
 
 .photo-update-btn {
@@ -1876,6 +1884,11 @@ body::after {
 
   .single-customer-grid p {
     padding: 0.4rem 0.5rem;
+  }
+
+  .nav-toggle-corner {
+    top: 1rem;
+    right: 1.1rem;
   }
 }
 
