@@ -143,6 +143,12 @@ const emptyTopUpForm = () => ({
   referenceNo: '',
   trnNo: '',
 })
+const emptyNewCardForm = () => ({
+  cardHolderName: '',
+  cardNumber: '',
+  cardExpiry: '',
+  cardType: 'Credit Card',
+})
 
 const topUpFieldMap = {
   topUpAmount: 'amount',
@@ -509,6 +515,9 @@ function Home({ user, onSignOut }) {
   const [topUpForm, setTopUpForm] = useState(() => emptyTopUpForm())
   const [topUpMessage, setTopUpMessage] = useState('')
   const [topUpFieldNonce, setTopUpFieldNonce] = useState(0)
+  const [customerDetailPanel, setCustomerDetailPanel] = useState('top-up')
+  const [newCardForm, setNewCardForm] = useState(() => emptyNewCardForm())
+  const [newCardMessage, setNewCardMessage] = useState('')
   const [menuOpen, setMenuOpen] = useState(false)
   const [isSidebarVisible, setIsSidebarVisible] = useState(true)
   const [isCompanyDetailOpen, setIsCompanyDetailOpen] = useState(false)
@@ -627,6 +636,9 @@ function Home({ user, onSignOut }) {
     setTopUpForm(emptyTopUpForm())
     setTopUpFieldNonce((prev) => prev + 1)
     setTopUpMessage('')
+    setCustomerDetailPanel('top-up')
+    setNewCardForm(emptyNewCardForm())
+    setNewCardMessage('')
   }, [selectedCustomer])
 
   const saveActiveItem = (label) => {
@@ -897,6 +909,62 @@ function Home({ user, onSignOut }) {
     } catch {
       setCustomers((prev) => prev.map((customer) => (customer.id === selectedCustomer.id ? selectedCustomer : customer)))
       setTopUpMessage('Top up failed. Please check API server.')
+    }
+  }
+
+  const handleNewCardChange = (event) => {
+    const { name, value } = event.target
+    setNewCardForm((prev) => ({
+      ...prev,
+      [name]: value,
+    }))
+    if (newCardMessage) setNewCardMessage('')
+  }
+
+  const handleNewCardSubmit = async (event) => {
+    event.preventDefault()
+    if (!selectedCustomer) return
+
+    const normalizedCardNumber = String(newCardForm.cardNumber || '').replace(/\s+/g, '').replace(/\D/g, '')
+    if (!newCardForm.cardHolderName.trim() || normalizedCardNumber.length < 12 || !newCardForm.cardExpiry.trim()) {
+      setNewCardMessage('Enter card holder name, valid card number, and expiry.')
+      return
+    }
+
+    const optimisticCustomer = {
+      ...selectedCustomer,
+      paymentMethod: newCardForm.cardType,
+      cardName: newCardForm.cardHolderName.trim(),
+      cardLast6: normalizedCardNumber.slice(-6),
+      cardExpiry: newCardForm.cardExpiry.trim(),
+      receiverName: '',
+      referenceNo: '',
+      trnNo: '',
+    }
+
+    setCustomers((prev) => prev.map((customer) => (customer.id === optimisticCustomer.id ? optimisticCustomer : customer)))
+    setTopUpForm((prev) => ({
+      ...prev,
+      amount: '',
+      paymentMethod: newCardForm.cardType,
+      cardName: optimisticCustomer.cardName,
+      cardLast6: optimisticCustomer.cardLast6,
+      cardExpiry: optimisticCustomer.cardExpiry,
+      receiverName: '',
+      referenceNo: '',
+      trnNo: '',
+    }))
+    setCustomerDetailPanel('top-up')
+    setNewCardMessage('New card saved for this customer.')
+    setNewCardForm(emptyNewCardForm())
+
+    try {
+      const updated = await updateCustomerInDb(selectedCustomer.id, optimisticCustomer)
+      setCustomers((prev) => prev.map((customer) => (customer.id === updated.id ? updated : customer)))
+      setCustomersError('')
+    } catch {
+      setCustomers((prev) => prev.map((customer) => (customer.id === selectedCustomer.id ? selectedCustomer : customer)))
+      setNewCardMessage('Could not save card. Please check API server.')
     }
   }
 
@@ -1175,116 +1243,183 @@ function Home({ user, onSignOut }) {
                 ) : null}
               </div>
 
-              <form className="topup-form" onSubmit={handleTopUpSubmit} autoComplete="off">
-                <h4>Top Up Money</h4>
-                <div className="topup-grid">
-                  <label>
-                    Add Amount
-                    <input
-                      name="topUpAmount"
-                      type="number"
-                      autoComplete="off"
-                      min="0"
-                      step="0.01"
-                      value={topUpForm.amount}
-                      onChange={handleTopUpChange}
-                      placeholder="Enter the Amount"
-                    />
-                  </label>
-                  <label>
-                    Payment Method
-                    <select name="paymentMethod" value={topUpForm.paymentMethod} onChange={handleTopUpChange} autoComplete="off">
-                      {paymentMethods.map((method) => (
-                        <option key={method} value={method}>
-                          {`${paymentMethodOptionIcons[method] || ''} ${method}`.trim()}
-                        </option>
-                      ))}
-                    </select>
-                  </label>
-                  {isCashPayment(topUpForm.paymentMethod) ? (
+              <div className="customer-detail-tabs">
+                <button
+                  type="button"
+                  className={`customer-detail-tab ${customerDetailPanel === 'top-up' ? 'is-active' : ''}`}
+                  onClick={() => setCustomerDetailPanel('top-up')}
+                >
+                  Top Up Money
+                </button>
+                <button
+                  type="button"
+                  className={`customer-detail-tab ${customerDetailPanel === 'new-card' ? 'is-active' : ''}`}
+                  onClick={() => setCustomerDetailPanel('new-card')}
+                >
+                  New Card
+                </button>
+              </div>
+
+              {customerDetailPanel === 'top-up' ? (
+                <form className="topup-form" onSubmit={handleTopUpSubmit} autoComplete="off">
+                  <h4>Top Up Money</h4>
+                  <div className="topup-grid">
                     <label>
-                      Receiver Name
+                      Add Amount
                       <input
-                        name="topUpReceiver"
-                        type="text"
+                        name="topUpAmount"
+                        type="number"
                         autoComplete="off"
-                        value={topUpForm.receiverName}
+                        min="0"
+                        step="0.01"
+                        value={topUpForm.amount}
                         onChange={handleTopUpChange}
-                        placeholder="Receiver name"
+                        placeholder="Enter the Amount"
                       />
                     </label>
-                  ) : null}
-                  {isCardPayment(topUpForm.paymentMethod) ? (
-                    <>
+                    <label>
+                      Payment Method
+                      <select name="paymentMethod" value={topUpForm.paymentMethod} onChange={handleTopUpChange} autoComplete="off">
+                        {paymentMethods.map((method) => (
+                          <option key={method} value={method}>
+                            {`${paymentMethodOptionIcons[method] || ''} ${method}`.trim()}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+                    {isCashPayment(topUpForm.paymentMethod) ? (
                       <label>
-                        Card Last 6
+                        Receiver Name
                         <input
-                          name="topUpCardLast6"
+                          name="topUpReceiver"
                           type="text"
                           autoComplete="off"
-                          inputMode="numeric"
-                          maxLength={6}
-                          value={topUpForm.cardLast6}
+                          value={topUpForm.receiverName}
                           onChange={handleTopUpChange}
-                          placeholder="Last 6 digits of Your card"
+                          placeholder="Receiver name"
                         />
                       </label>
-                      <label>
-                        Card Expiry
-                        <input
-                          name="topUpCardExpiry"
-                          type="text"
-                          autoComplete="off"
-                          value={topUpForm.cardExpiry}
-                          onChange={handleTopUpChange}
-                          placeholder="MM/YY"
-                        />
-                      </label>
-                      <label>
-                        Name Of Card Holder
-                        <input
-                          name={`topUpCardHolder__${topUpFieldNonce}`}
-                          type="text"
-                          autoComplete="one-time-code"
-                          value={topUpForm.cardName}
-                          onChange={handleTopUpChange}
-                          placeholder="Name Of Card Holder"
-                        />
-                      </label>
-                    </>
-                  ) : null}
-                  {!isCashPayment(topUpForm.paymentMethod) && !isCardPayment(topUpForm.paymentMethod) ? (
-                    <>
-                      <label>
-                        Reference No
-                        <input
-                          name="topUpReference"
-                          type="text"
-                          autoComplete="off"
-                          value={topUpForm.referenceNo}
-                          onChange={handleTopUpChange}
-                          placeholder="Reference number"
-                        />
-                      </label>
-                      <label>
-                        TRN No
-                        <input
-                          name="topUpTrn"
-                          type="text"
-                          autoComplete="off"
-                          value={topUpForm.trnNo}
-                          onChange={handleTopUpChange}
-                          placeholder="TRN number"
-                        />
-                      </label>
-                    </>
-                  ) : null}
-                </div>
-                <div className="topup-actions">
-                  <button type="submit" className="submit-customer-btn">Add Money</button>
-                  {topUpMessage ? <span className="entry-success">{topUpMessage}</span> : null}
-                </div>
-              </form>
+                    ) : null}
+                    {isCardPayment(topUpForm.paymentMethod) ? (
+                      <>
+                        <label>
+                          Card Last 6
+                          <input
+                            name="topUpCardLast6"
+                            type="text"
+                            autoComplete="off"
+                            inputMode="numeric"
+                            maxLength={6}
+                            value={topUpForm.cardLast6}
+                            onChange={handleTopUpChange}
+                            placeholder="Last 6 digits of Your card"
+                          />
+                        </label>
+                        <label>
+                          Card Expiry
+                          <input
+                            name="topUpCardExpiry"
+                            type="text"
+                            autoComplete="off"
+                            value={topUpForm.cardExpiry}
+                            onChange={handleTopUpChange}
+                            placeholder="MM/YY"
+                          />
+                        </label>
+                        <label>
+                          Name Of Card Holder
+                          <input
+                            name={`topUpCardHolder__${topUpFieldNonce}`}
+                            type="text"
+                            autoComplete="one-time-code"
+                            value={topUpForm.cardName}
+                            onChange={handleTopUpChange}
+                            placeholder="Name Of Card Holder"
+                          />
+                        </label>
+                      </>
+                    ) : null}
+                    {!isCashPayment(topUpForm.paymentMethod) && !isCardPayment(topUpForm.paymentMethod) ? (
+                      <>
+                        <label>
+                          Reference No
+                          <input
+                            name="topUpReference"
+                            type="text"
+                            autoComplete="off"
+                            value={topUpForm.referenceNo}
+                            onChange={handleTopUpChange}
+                            placeholder="Reference number"
+                          />
+                        </label>
+                        <label>
+                          TRN No
+                          <input
+                            name="topUpTrn"
+                            type="text"
+                            autoComplete="off"
+                            value={topUpForm.trnNo}
+                            onChange={handleTopUpChange}
+                            placeholder="TRN number"
+                          />
+                        </label>
+                      </>
+                    ) : null}
+                  </div>
+                  <div className="topup-actions">
+                    <button type="submit" className="submit-customer-btn">Add Money</button>
+                    {topUpMessage ? <span className="entry-success">{topUpMessage}</span> : null}
+                  </div>
+                </form>
+              ) : (
+                <form className="newcard-form" onSubmit={handleNewCardSubmit} autoComplete="off">
+                  <h4>New Card</h4>
+                  <div className="newcard-grid">
+                    <label>
+                      Card Holder Name
+                      <input
+                        name="cardHolderName"
+                        type="text"
+                        value={newCardForm.cardHolderName}
+                        onChange={handleNewCardChange}
+                        placeholder="Enter card holder name"
+                      />
+                    </label>
+                    <label>
+                      Card Number
+                      <input
+                        name="cardNumber"
+                        type="text"
+                        inputMode="numeric"
+                        value={newCardForm.cardNumber}
+                        onChange={handleNewCardChange}
+                        placeholder="Enter card number"
+                      />
+                    </label>
+                    <label>
+                      Card Expiry
+                      <input
+                        name="cardExpiry"
+                        type="text"
+                        value={newCardForm.cardExpiry}
+                        onChange={handleNewCardChange}
+                        placeholder="MM/YY"
+                      />
+                    </label>
+                    <label>
+                      Card Type
+                      <select name="cardType" value={newCardForm.cardType} onChange={handleNewCardChange}>
+                        <option value="Credit Card">Credit Card</option>
+                        <option value="Debit Card">Debit Card</option>
+                      </select>
+                    </label>
+                  </div>
+                  <div className="newcard-actions">
+                    <button type="submit" className="submit-customer-btn">Create Card</button>
+                    {newCardMessage ? <span className="entry-success">{newCardMessage}</span> : null}
+                  </div>
+                </form>
+              )}
 
               <div className="single-customer-actions">
                 <button

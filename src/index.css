@@ -1554,7 +1554,32 @@ body::after {
   letter-spacing: 0.01em;
 }
 
-.topup-form {
+.customer-detail-tabs {
+  margin-top: 1rem;
+  display: flex;
+  gap: 0.45rem;
+  flex-wrap: wrap;
+}
+
+.customer-detail-tab {
+  border: 1px solid var(--home-border);
+  border-radius: 0.58rem;
+  background: transparent;
+  color: var(--home-muted);
+  padding: 0.38rem 0.66rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.customer-detail-tab.is-active {
+  color: var(--home-text);
+  background: rgb(255 255 255 / 0.06);
+  border-color: var(--line-strong);
+}
+
+.topup-form,
+.newcard-form {
   margin-top: 1rem;
   padding-top: 0.9rem;
   border-top: 1px solid var(--home-border);
@@ -1562,17 +1587,20 @@ body::after {
   gap: 0.8rem;
 }
 
-.topup-form h4 {
+.topup-form h4,
+.newcard-form h4 {
   font-size: 0.96rem;
 }
 
-.topup-grid {
+.topup-grid,
+.newcard-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 0.6rem 0.8rem;
 }
 
-.topup-grid label {
+.topup-grid label,
+.newcard-grid label {
   display: grid;
   gap: 0.3rem;
   font-size: 0.8rem;
@@ -1580,7 +1608,9 @@ body::after {
 }
 
 .topup-grid input,
-.topup-grid select {
+.topup-grid select,
+.newcard-grid input,
+.newcard-grid select {
   border: 1px solid var(--home-border);
   border-radius: 0.58rem;
   background: var(--home-surface);
@@ -1590,11 +1620,14 @@ body::after {
 }
 
 .topup-grid input:focus,
-.topup-grid select:focus {
+.topup-grid select:focus,
+.newcard-grid input:focus,
+.newcard-grid select:focus {
   border-color: var(--line-strong);
 }
 
-.topup-actions {
+.topup-actions,
+.newcard-actions {
   display: flex;
   align-items: center;
   gap: 0.7rem;
@@ -1883,7 +1916,8 @@ body::after {
   .customer-details-layout,
   .profile-grid,
   .single-customer-grid,
-  .topup-grid {
+  .topup-grid,
+  .newcard-grid {
     grid-template-columns: 1fr;
   }
 
