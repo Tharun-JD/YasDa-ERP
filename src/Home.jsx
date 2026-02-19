@@ -1444,17 +1444,6 @@ function Home({ user, onSignOut }) {
       <aside className="home-sidebar">
         <div className="sidebar-head">
           <h1 className="brand-title">Workspace</h1>
-          <button
-            type="button"
-            className="top-btn icon-btn nav-toggle-btn"
-            onClick={() => setIsSidebarVisible(false)}
-            aria-label="Hide sidebar"
-            title="Hide sidebar"
-          >
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M4 6.5h16M4 12h16M4 17.5h16" />
-            </svg>
-          </button>
         </div>
         <nav className="side-nav" aria-label="Main navigation">
           {navItems.map((item) => {
